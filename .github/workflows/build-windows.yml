@@ -1,0 +1,28 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller PySide6
+    - name: Build exe
+      run: |
+        pyinstaller --noconfirm --onefile --add-data "tasks.json;." main.py
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: farm-exe
+        path: dist/*.exe
